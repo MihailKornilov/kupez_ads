@@ -1,0 +1,150 @@
+*{
+	padding:0;
+	margin:0;
+	font:13px Tahoma;
+}
+input,textarea{border:#ccc solid 1px;padding:5px 5px 6px 5px;outline:none}
+select{outline:none}
+table{border:0;border-spacing:0}
+textarea{resize:none}
+img{border:none}
+b{font-weight:bold}
+
+.dn{display:none}
+
+#table-main{width:100%;margin-bottom:50px}
+#td-logo{text-align:center}
+#logo{
+	display:inline-block;
+	width:600px;
+	height:120px;
+	background:url("../img/logo.jpg?1") no-repeat 95px 5px;
+}
+@font-face {
+	font-family: DS_Yermak_D; /* Гарнитура шрифта */
+	src: url(font/DS_Yermak_D.ttf); /* Путь к файлу со шрифтом */
+}
+#logo-podpis{
+	font:26px DS_Yermak_D;
+	margin:0 0 10px 80px;
+}
+
+#td-menu{background-color:#ff9;text-align:center}
+#menu{display:inline-block;width:600px}
+#menu table{
+	width:100%;
+	height:50px;
+}
+#menu td{font-weight:bold;color:#660;cursor:pointer}
+#menu td.s,#menu td:hover{background-color:#f8f800}
+
+#menu2{display:none}
+#menu3{display:none}
+#menu4{display:none}
+
+.menu-info{
+	display:inline-block;
+	width:500px;
+	text-align:left;
+	margin-bottom:30px;
+}
+.menu-info h1{margin:15px 0 3px;font-weight:bold}
+.menu-info p{margin:5px 0;text-align:justify}
+.menu-info dd{font:italic 12px arial;margin-left:20px}
+.menu-info table{margin:10px 30px 10px 10px;border-collapse:collapse}
+.menu-info td{padding:5px 10px;border:#dda solid 1px}
+.menu-info ul{margin-left:40px}
+
+#td-main{text-align:center;background-color:#ffffd4}
+#content{width:600px;display:inline-block}
+
+
+#tab-head{
+	font:bold 18px Verdana;
+	color:#555;
+	margin:20px 0 10px;
+}
+
+#ad-form{border-spacing:10px;width:100%;}
+.label{color:#777;text-align:right;width:100px}
+.label.top{vertical-align:top;padding-top:3px}
+.title{text-align:left}
+#ad-form select{
+	padding:5px;
+	width:221px;
+	margin-right:10px;
+}
+#rubric_sub_id{display:none}
+#txt{width:440px;height:50px}
+#ob-calc{margin:2px 0 2px 5px;color:#070}
+#ob-calc span{color:#777;font-size:11px}
+#ad-form label{cursor:pointer}
+#ad-form #black{margin-left:30px}
+#ad-form #black,#ad-form #ramka{position:relative;top:2px}
+#ad-form em{color:#777}
+
+#telefon{width:440px}
+
+
+
+#gazeta-nomer .nomer{
+	width:452px;
+	border:#ada solid 1px;
+	margin-bottom:7px;
+	background-color:#cfc;
+}
+#gazeta-nomer .nomer td{padding:10px}
+#gazeta-nomer .td-head{cursor:pointer}
+#gazeta-nomer .gn{color:#777;margin-left:3px}
+#gazeta-nomer .print{margin-left:15px}
+#gazeta-nomer .cena{float:right;color:#060}
+#gazeta-nomer .nomer.dis{background-color:#f2f2f2;border:#ddd solid 1px}
+#gazeta-nomer .nomer.dis *{color:#777}
+#gazeta-nomer .nomer.dis:hover *{color:#000}
+#gazeta-nomer .nomer.dis .cena{display:none}
+
+
+
+#td-submit{text-align:center}
+#div-submit{width:600px;display:inline-block}
+#submit{
+	display:inline-block;
+	width:300px;
+	margin-top:20px;
+	padding:20px 30px;
+	background-color:#fcc;
+	color:#800;
+}
+#submit.send{
+	background-color:#bfb;
+	color:#080;
+	cursor:pointer;
+}
+#submit.send span{font-weight:bold}
+
+#submit.sending{background-color:#ff9}
+#submit.sending span{display:none}
+#submit.sending em{font-weight:bold;color:#770}
+#submit:not(.sending) em{display:none}
+
+
+#ad-form-sended #msg,#ad-form-sended #msg b {
+	font-size: 18px;
+	font-weight: bold;
+	color: #292;
+}
+#ad-form-sended #msg{margin:40px 0 20px}
+#ad-form-sended #info{
+	display:inline-block;
+	width:400px;
+	font:14px Verdana;
+	margin-bottom:20px;
+}
+#pay-wait, #pay-success{
+	font:bold 17px Verdana;
+	color:#c22;
+	margin:20px 0 40px;
+}
+#pay-success{color:#292}
+
+
