@@ -44,14 +44,19 @@ $sig = sha1($r['type'].';true;'.$pay_for.';'.SECRET_KEY);
 define('STATUS_TRUE', '{"status":true,"pay_for":"'.$pay_for.'","signature":"'.$sig.'"}');
 
 $txt[] = 'проверка наличия заявки...';
-$sql = "SELECT * FROM `gazeta_zayav` WHERE `id`=".$pay_for;
+$sql = "SELECT *
+		FROM `_zayav`
+		WHERE `id`=".$pay_for;
 $txt[] = $sql;
 if(!$z = query_assoc($sql))
 	die(STATUS_FALSE);
 $txt[] = '...ok';
 
 $txt[] = 'проверка наличия платежа...';
-$sql = "SELECT COUNT(*) FROM `gazeta_money` WHERE `zayav_id`=".$pay_for." AND `viewer_id_add`=".VIEWER_ONPAY;
+$sql = "SELECT COUNT(*)
+		FROM `_money_income`
+		WHERE `zayav_id`=".$pay_for."
+		  AND `viewer_id_add`=".VIEWER_ONPAY;
 $txt[] = $sql;
 if(query_value($sql))
 	die(STATUS_FALSE);
@@ -64,27 +69,30 @@ switch($r['type']) {
 		$txt[] = 'amount: '.$payment['amount'];
 
 		$txt[] = 'внесение платежа...';
-		$sql = "INSERT INTO `gazeta_money` (
+		$sql = "INSERT INTO `_money_income` (
+				`app_id`,
 				`zayav_id`,
 				`invoice_id`,
 				`sum`,
 				`viewer_id_add`
 			) VALUES (
+				".APP_ID.",
 				".$pay_for.",
-				9,
+				36,
 				".$payment['amount'].",
 				".VIEWER_ONPAY."
 			)";
 		$txt[] = $sql;
 		query($sql);
-		$insert_id = mysql_insert_id();
+		$insert_id = query_insert_id('_money_income');
 		$txt[] = $insert_id.' = insert_id';
 
 		$txt[] = 'внесение истории о платеже...';
-		invoice_history_insert(array(
-			'action' => 1,
-			'table' => 'gazeta_money',
-			'id' => $insert_id
+		_balans(array(
+			'action_id' => 1,
+			'invoice_id' => 36,
+			'sum' => $payment['amount'],
+			'income_id' => $insert_id
 		));
 		$txt[] = '...ok';
 
@@ -92,9 +100,10 @@ switch($r['type']) {
 		$user = (array)$r['user'];
 		$balance = (array)$r['balance'];
 		$order = (array)$r['order'];
-		$sql = "INSERT INTO `onpay_money_info` (
+		$sql = "INSERT INTO `_money_onpay` (
+				`app_id`,
 				`zayav_id`,
-				`money_id`,
+				`income_id`,
 
 				`user.email`,
 				`user.phone`,
@@ -114,6 +123,7 @@ switch($r['type']) {
 				`order.to_amount`,
 				`order.to_way`
 			) VALUES (
+				".APP_ID.",
 				".$pay_for.",
 				".$insert_id.",
 

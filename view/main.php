@@ -1,5 +1,5 @@
 <?php
-function _header() {
+function _kupez_header() {
 	return
 	'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'.
 	'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">'.
@@ -7,26 +7,33 @@ function _header() {
 		'<meta http-equiv="content-type" content="text/html; charset=windows-1251">'.
 		'<title>Газета КупецЪ - подача объявления</title>'.
 
-		'<script type="text/javascript" src="/.vkapp/.js/errors.js"></script>'.
+		'<script src="/.vkapp/.js/errors.js"></script>'.
+		'<script src="/.vkapp/.js/jquery-2.1.4.min.js"></script>'.
+		'<script src="/.vkapp/.api/js/xd_connection.min.js"></script>'.
 
-		'<script type="text/javascript" src="/.vkapp/.js/jquery-2.0.3.min.js"></script>'.
-		'<script type="text/javascript" src="/.vkapp/kupez/js/G_values.js"></script>'.
-
-		'<script type="text/javascript">'.
-			'var URL="http://'.DOMAIN.'/kupez";'.
+		'<script>'.
+			'for(var i in VK)if(typeof VK[i]=="function")VK[i]=function(){return false};'.
+			'var URL="http://'.DOMAIN.'/kupez",'.
+				'VIEWER_ID=0,'.
+				'APP_ID='.APP_ID.';'.
 		'</script>'.
-		'<script type="text/javascript" src="js/main.js"></script>'.
+
+		'<link rel="stylesheet" type="text/css" href="/.vkapp/.api/css/vk.css" />'.
+		'<script src="/.vkapp/.api/js/vk.js?'.rand(0,1000).'"></script>'.
+
+		'<script src="/.vkapp/.api/js/values/app_'.APP_ID.'.js"></script>'.
+		'<script src="js/main.js?'.rand(0,1000).'"></script>'.
 
 		'<link rel="stylesheet" type="text/css" href="css/main.css" />'.
 	'</head>'.
 
     '<body>';
-}//_header()
+}
 function _kupez_footer() {
 	return
 		'</body>'.
 	'</html>';
-}//_footer()
+}
 
 
 
@@ -61,7 +68,7 @@ function _body() {
 				'</div>'
 	: '').
 	'</table>';
-}//_body()
+}
 
 function menu() {
 	return
@@ -74,20 +81,13 @@ function menu() {
 				'<td val="4">Контакты'.
 		'</table>'.
 	'</div>';
-}//menu()
+}
 
 function forma() {
-	$sql = "SELECT * FROM `setup_ob_dop`";
-	$q = query($sql);
-	$dop = array();
-	while($r = mysql_fetch_assoc($q))
-		$dop[$r['id']] = $r;
-
-	$sql = "SELECT * FROM `setup_rubric` ORDER BY `sort`";
-	$q = query($sql);
-	$rubric = '';
-	while($r = mysql_fetch_assoc($q))
-		$rubric .= '<option value="'.$r['id'].'">'.$r['name'];
+	$sql = "SELECT *
+			FROM `_setup_gazeta_ob_dop`
+			WHERE `app_id`=".APP_ID;
+	$dop = query_arr($sql);
 
 	return
 	'<table id="ad-form"'.(AD_POSTED_ID ? ' class="dn"' : '').'>'.
@@ -95,34 +95,32 @@ function forma() {
 //		'<tr><td class="label">Телефон для связи:<td><input type="text" />'.
 		'<tr><td class="label">Рубрика:'.
 			'<td class="title">'.
-				'<select id="rubric_id">'.
-					'<option value="0">'.
-					$rubric.
-				'</select>'.
-				'<select id="rubric_sub_id"></select>'.
+				'<input type="hidden" id="rubric_id" />'.
+				'<input type="hidden" id="rubric_id_sub" />'.
 		'<tr><td class="label top">Текст:'.
 			'<td class="title">'.
 				'<textarea id="txt" autofocus></textarea>'.
 				'<div id="ob-calc"></div>'.
 		'<tr><td class="label">Дополнительно:'.
 			'<td class="title">'.
-				'<label><input type="checkbox" id="ramka" /> Обвести в рамку <em>(+'.$dop[1]['cena'].' руб.)</em></label>'.
-				'<label><input type="checkbox" id="black" /> Чёрный фон <em>(+'.$dop[2]['cena'].' руб.)</em></label>'.
+				_check('ramka', 'Обвести в рамку <em>(+'.$dop[1]['cena'].' руб.)</em>').
+				_check('black', 'Чёрный фон <em>(+'.$dop[2]['cena'].' руб.)</em>').
 		'<tr><td class="label">Телефон:<td class="title"><input type="text" id="telefon" placeholder="8 900 123 45 67" />'.
 		'<tr><td class="label top">Номера газеты:<td class="title">'.gazetaNomer().
 	'</table>';
 }
 function gazetaNomer() {
 	$sql = "SELECT *
-			FROM `gazeta_nomer`
-			WHERE `day_print`>DATE_FORMAT(NOW(),'%Y-%m-%d')
+			FROM `_setup_gazeta_nomer`
+			WHERE `app_id`=".APP_ID."
+			  and `day_print`>DATE_FORMAT(NOW(),'%Y-%m-%d')
 			ORDER BY `general_nomer`
 			LIMIT 4";
 	$q = query($sql);
 	$spisok = '';
 	while($r = mysql_fetch_assoc($q)) {
 		$spisok .=
-			'<table class="nomer dis" val="'.$r['general_nomer'].'">'.
+			'<table class="nomer dis" val="'.$r['id'].'">'.
 				'<tr><td class="td-head">'.
 						'<span>Номер <b>'.$r['week_nomer'].'</b></span>'.
 						'<span class="gn">('.$r['general_nomer'].')</span>.'.
@@ -131,15 +129,18 @@ function gazetaNomer() {
 			'</table>';
 	}
 	return '<div id="gazeta-nomer">'.$spisok.'</div>';
-}//gazetaNomer()
+}
 
 function forma_sended() {//сообщение об успешном размещении объявления
 	$paid = '<div id="pay-wait">Идёт проверка платежа...</div>';
 	if(AD_POSTED_ID) {
-		$sql = "SELECT * FROM `gazeta_money` WHERE `zayav_id`=".AD_POSTED_ID." AND `viewer_id_add`=".VIEWER_ONPAY." LIMIT 1";
-		if($r = query_assoc($sql)) {
+		$sql = "SELECT *
+				FROM `_money_income`
+				WHERE `zayav_id`=".AD_POSTED_ID."
+				  AND `viewer_id_add`=".VIEWER_ONPAY."
+				LIMIT 1";
+		if($r = query_assoc($sql))
 			$paid = '<div id="pay-success">Платёж на сумму '.round($r['sum']).' руб. зачислен.</div>';
-		}
 	}
 	return
 	'<div id="ad-form-sended"'.(!AD_POSTED_ID ? ' class="dn"' : '').'>'.
@@ -150,7 +151,7 @@ function forma_sended() {//сообщение об успешном размещении объявления
 		'</div>'.
 		$paid.
 	'</div>';
-}//forma_sended()
+}
 
 function instruction() {
 	return
@@ -172,7 +173,7 @@ function instruction() {
 			'<p>Параметр применяется ко всем выбранным номерам газеты.'.
 			'<h1>Номера газеты</h1>'.
 			'<p>Объявление можно подать в ближайшие 4 номера газеты. '.
-				'Если объявление размещается сразу в 4 номера, то один номер становится бесплатным.'.
+				'Если объявление размещается сразу в 3 номера, то четвертый номер бесплатно.'.
 			'<p>Как правило, очередной номер газеты выходит каждую пятницу. '.
 				'Крайний срок подачи объявления на текущий номер - понедельник.'.
 			'<h1>Отправка и оплата</h1>'.
@@ -185,16 +186,18 @@ function instruction() {
 
 		'</div>'.
 	'</div>';
-}//instruction()
+}
 
 function terms() {
-	$sql = "SELECT * FROM `setup_ob_dop`";
-	$q = query($sql);
-	$dop = array();
-	while($r = mysql_fetch_assoc($q))
-		$dop[$r['id']] = $r;
+	$sql = "SELECT *
+			FROM `_setup_gazeta_ob_dop`
+			WHERE `app_id`=".APP_ID;
+	$dop = query_arr($sql);
 
-	$g = query_assoc("SELECT * FROM `setup_global`");
+	$sql = "SELECT `key`,`value`
+			FROM `_setup_global`
+			WHERE `app_id`=".APP_ID;
+	$g = query_ass($sql);
 
 	return
 	'<div class="menu" id="menu3">'.
@@ -203,8 +206,8 @@ function terms() {
 			'<p>Размещение объявлений в газете КупецЪ является платной услугой.'.
 			'<p>Вычисление стоимости объявления производится по следующей схеме:'.
 			'<table>'.
-				'<tr><td>Первые '.$g['txt_len_first'].' символов:<td>'.$g['txt_cena_first'].' руб.'.
-				'<tr><td>Каждые следующие '.$g['txt_len_next'].' символов:<td>'.$g['txt_cena_next'].' руб.'.
+				'<tr><td>Первые '.$g['TXT_LEN_FIRST'].' символов:<td>'.$g['TXT_CENA_FIRST'].' руб.'.
+				'<tr><td>Каждые следующие '.$g['TXT_LEN_NEXT'].' символов:<td>'.$g['TXT_CENA_NEXT'].' руб.'.
 				'<tr><td>Обвести в рамку:<td>'.$dop[1]['cena'].' руб.'.
 				'<tr><td>Выделить на чёрном фоне:<td>'.$dop[2]['cena'].' руб.'.
 			'</table>'.
@@ -222,7 +225,7 @@ function terms() {
 			'</ul>'.
 		'</div>'.
 	'</div>';
-}//terms()
+}
 
 function contact() {
 	return
@@ -247,7 +250,7 @@ function contact() {
 
 		'</div>'.
 	'</div>';
-}//contact()
+}
 
 
 

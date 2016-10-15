@@ -5,7 +5,7 @@ require_once('config.php');
 
 require_once('view/main.php');
 
-$send = _header();
+$send = _kupez_header();
 $send .= _body();
 $send .= _kupez_footer();
 

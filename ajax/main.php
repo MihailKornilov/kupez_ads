@@ -8,7 +8,7 @@ switch(@$_POST['op']) {
 		if(empty($_POST['gn']))
 			jsonError();
 
-		$rubric_sub_id = _num($_POST['rubric_sub_id']);
+		$rubric_id_sub = _num($_POST['rubric_id_sub']);
 		$txt = _txt($_POST['txt']);
 		$txt = preg_replace('/[ ]+/', ' ', $txt);
 		$telefon = _txt($_POST['telefon']);
@@ -26,22 +26,26 @@ switch(@$_POST['op']) {
 				$summa += $ob_cena;
 		}
 
-		$sql = "INSERT INTO `gazeta_zayav` (
-				    `category`,
+		$sql = "INSERT INTO `_zayav` (
+				    `app_id`,
+				    `service_id`,
+				    `nomer`,
 
 				    `rubric_id`,
-				    `rubric_sub_id`,
-				    `txt`,
-				    `telefon`,
+				    `rubric_id_sub`,
+				    `about`,
+				    `phone`,
 
-				    `summa`,
-				    `gn_count`,
+				    `sum_cost`,
+				    `count`,
 				    `viewer_id_add`
 				) VALUES (
-				    1,
+				    ".APP_ID.",
+				    8,
+					"._maxSql('_zayav', 'nomer', 1).",
 
 				    ".$rubric_id.",
-				    ".$rubric_sub_id.",
+				    ".$rubric_id_sub.",
 				    '".addslashes($txt)."',
 				    '".addslashes($telefon)."',
 
@@ -50,32 +54,39 @@ switch(@$_POST['op']) {
 				    ".VIEWER_ONPAY."
 				)";
 		query($sql);
-		$send['id'] = mysql_insert_id();
+
+		$send['id'] = query_insert_id('_zayav');
+
+		$sql = "UPDATE `_zayav`
+				SET `name`=CONCAT('Интернет-объявление ',`nomer`)
+				WHERE `id`=".$send['id'];
+		query($sql);
 
 		foreach($gn as $i => $r) {
 			$gn_values[] = '('.
+				APP_ID.','.
 				$send['id'].','.
 				$r.','.
 				$dop_id.','.
 				($i != 3 ? $ob_cena : 0).
 			')';
 		}
-		$sql = "INSERT INTO `gazeta_nomer_pub` (
+		$sql = "INSERT INTO `_zayav_gazeta_nomer` (
+					`app_id`,
 					`zayav_id`,
-					`general_nomer`,
+					`gazeta_nomer_id`,
 					`dop`,
 					`cena`
 			   ) VALUES ".implode(',', $gn_values);
 		query($sql);
 
-		_historyInsert(
-			11,
-			array(
-				'zayav_id' => $send['id'],
-				'viewer_id' => VIEWER_ONPAY
-			),
-			'gazeta_history'
-		);
+		_zayavBalansUpdate($send['id']);
+
+		_history(array(
+			'type_id' => 73,
+			'zayav_id' => $send['id'],
+			'viewer_id' => VIEWER_ONPAY
+		));
 
 		jsonSuccess($send);
 		break;

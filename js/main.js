@@ -69,14 +69,14 @@ var AJAX_MAIN = URL + '/ajax/main.php',
 	},
 	obValues = function() {
 		var dop_id = 0;
-		if($('#ramka').prop('checked'))
+		if(_num($('#ramka').val()))
 			dop_id = 1;
-		else if($('#black').prop('checked'))
+		else if(_num($('#black').val()))
 			dop_id = 2;
 		return {
 			op:'ob_save',
-			rubric_id:parseInt($('#rubric_id').val()),
-			rubric_sub_id:parseInt($('#rubric_sub_id').val()),
+			rubric_id:_num($('#rubric_id').val()),
+			rubric_id_sub:_num($('#rubric_id_sub').val()),
 			txt:$.trim($('#txt').val()),
 			telefon:$.trim($('#telefon').val()),
 			gn:SEND_GN,
@@ -102,6 +102,22 @@ var AJAX_MAIN = URL + '/ajax/main.php',
 			s.addClass('send');
 			span.html('Разместить объявление за ' + OB_SUM + ' руб.');
 		}
+	},
+	checkPut = function(v, attr_id) {
+		var dop_id = 0;
+		OB_DOP = 0;
+		if(attr_id == 'ramka') {
+			$('#black')._check(0);
+			dop_id = 1;
+		}
+		if(attr_id == 'black') {
+			$('#ramka')._check(0);
+			dop_id = 2;
+		}
+		if(v)
+			OB_DOP = GAZETA_OBDOP_CENA[dop_id];
+
+		submitTest();
 	};
 
 $(document)
@@ -141,27 +157,15 @@ $(document)
 			$('#tr-submit')[v == 1 ? 'show' : 'hide']();
 		});
 
-		$('#rubric_id').change(function() {
-			var n,
-				html = '<option value="0">',
-				id = parseInt($('#rubric_id').val()),
-				len = RUBRIC_SUB_SPISOK[id] ? RUBRIC_SUB_SPISOK[id].length : 0;
-			$('#rubric_sub_id')[len ? 'show' : 'hide']();
-			if(len) {
-				for(n = 0; n < len; n++) {
-					var sp = RUBRIC_SUB_SPISOK[id][n];
-					html += '<option value="' + sp.uid + '">' + sp.title;
-				}
-				$('#rubric_sub_id').html(html);
+		$('#rubric_id')._rubric({
+			w_rub:170,
+			w_sub:250,
+			func:function() {
+				$('#txt').focus();
+				submitTest();
 			}
-			$('#rubric_sub_id').val(0);
-			$('#txt').focus();
-			submitTest();
 		});
-		$('#rubric_sub_id').change(function() {
-			$('#txt').focus();
-			submitTest();
-		});
+
 
 		$('#txt')
 			.autosize()
@@ -185,22 +189,8 @@ $(document)
 			submitTest();
 		});
 
-		$('#ramka,#black').change(function() {
-			var t = $(this),
-				id = t.attr('id'),
-				dop_id = 0;
-			OB_DOP = 0;
-			if(id == 'ramka') {
-				$('#black').attr('checked', false);
-				dop_id = 1;
-			}
-			if(id == 'black') {
-				$('#ramka').attr('checked', false);
-				dop_id = 2;
-			}
-			if(t.prop('checked'))
-				OB_DOP = OBDOP_CENA_ASS[dop_id];
-			submitTest();
-		});
+		$('#ramka')._check(checkPut);
+		$('#black')._check(checkPut);
+
 		submitTest();
 	});
