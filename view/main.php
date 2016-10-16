@@ -9,7 +9,7 @@ function _kupez_header() {
 
 		'<script src="/.vkapp/.js/errors.js"></script>'.
 		'<script src="/.vkapp/.js/jquery-2.1.4.min.js"></script>'.
-		'<script src="/.vkapp/.api/js/xd_connection.min.js"></script>'.
+		'<script src="'.API_HTML.'/js/xd_connection.min.js"></script>'.
 
 		'<script>'.
 			'for(var i in VK)if(typeof VK[i]=="function")VK[i]=function(){return false};'.
@@ -18,11 +18,11 @@ function _kupez_header() {
 				'APP_ID='.APP_ID.';'.
 		'</script>'.
 
-		'<link rel="stylesheet" type="text/css" href="/.vkapp/.api/css/vk.css" />'.
-		'<script src="/.vkapp/.api/js/vk.js?'.rand(0,1000).'"></script>'.
+		'<link rel="stylesheet" type="text/css" href="'.API_HTML.'/css/vk.css" />'.
+		'<script src="'.API_HTML.'/js/vk.js"></script>'.
 
-		'<script src="/.vkapp/.api/js/values/app_'.APP_ID.'.js"></script>'.
-		'<script src="js/main.js?'.rand(0,1000).'"></script>'.
+		'<script src="'.API_HTML.'/js/values/app_'.APP_ID.'.js"></script>'.
+		'<script src="js/main.js"></script>'.
 
 		'<link rel="stylesheet" type="text/css" href="css/main.css" />'.
 	'</head>'.
@@ -139,8 +139,13 @@ function forma_sended() {//сообщение об успешном размещении объявления
 				WHERE `zayav_id`=".AD_POSTED_ID."
 				  AND `viewer_id_add`=".VIEWER_ONPAY."
 				LIMIT 1";
-		if($r = query_assoc($sql))
-			$paid = '<div id="pay-success">Платёж на сумму '.round($r['sum']).' руб. зачислен.</div>';
+		if($r = query_assoc($sql)) {
+			$sql = "SELECT *
+					FROM `_money_onpay`
+					WHERE `income_id`=".$r['id'];
+			if($mo = query_assoc($sql))
+				$paid = '<div id="pay-success">Платёж на сумму '.round($mo['order.from_amount']).' руб. зачислен.</div>';
+		}
 	}
 	return
 	'<div id="ad-form-sended"'.(!AD_POSTED_ID ? ' class="dn"' : '').'>'.

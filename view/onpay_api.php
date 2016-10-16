@@ -87,6 +87,8 @@ switch($r['type']) {
 		$insert_id = query_insert_id('_money_income');
 		$txt[] = $insert_id.' = insert_id';
 
+		_zayavBalansUpdate($pay_for);
+
 		$txt[] = 'внесение истории о платеже...';
 		_balans(array(
 			'action_id' => 1,

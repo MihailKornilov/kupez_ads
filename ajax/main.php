@@ -15,16 +15,12 @@ switch(@$_POST['op']) {
 		$dop_id = _num($_POST['dop_id']);
 		$ob_cena = _num($_POST['ob_cena']);
 
-		$summa = 0;
 		$gn_values = array();
 
 		$gn = explode(',', $_POST['gn']);
-		foreach($gn as $i => $r) {
+		foreach($gn as $i => $r)
 			if(!_num($r))
 				jsonError();
-			if($i != 3)
-				$summa += $ob_cena;
-		}
 
 		$sql = "INSERT INTO `_zayav` (
 				    `app_id`,
@@ -36,7 +32,7 @@ switch(@$_POST['op']) {
 				    `about`,
 				    `phone`,
 
-				    `sum_cost`,
+				    `onpay_checked`,
 				    `count`,
 				    `viewer_id_add`
 				) VALUES (
@@ -49,7 +45,7 @@ switch(@$_POST['op']) {
 				    '".addslashes($txt)."',
 				    '".addslashes($telefon)."',
 
-				    ".$summa.",
+					2,
 				    ".count($gn).",
 				    ".VIEWER_ONPAY."
 				)";
