@@ -14,7 +14,7 @@ function _kupez_header() {
 		'<script>'.
 			'for(var i in VK)if(typeof VK[i]=="function")VK[i]=function(){return false};'.
 			'var URL="http://'.DOMAIN.'/kupez",'.
-				'VIEWER_ID=0,'.
+				'VIEWER_ID='.VIEWER_ID.','.
 				'APP_ID='.APP_ID.';'.
 		'</script>'.
 
