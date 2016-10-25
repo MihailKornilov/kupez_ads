@@ -33,13 +33,13 @@ var AJAX_MAIN = URL + '/ajax/main.php',
 		if(!txt.length)
 			$('#ob-calc').html('');
 		else {
-			txt_sum += TXT_CENA_FIRST * 1;
+			txt_sum += Math.round(TXT_CENA_FIRST * CENA_KOEF);
 			if(txt.length > TXT_LEN_FIRST) {
 				podr_about = ' = ';
 				var CEIL = Math.ceil((txt.length - TXT_LEN_FIRST) / TXT_LEN_NEXT);
 				podr_about += TXT_LEN_FIRST;
 				var LAST = txt.length - TXT_LEN_FIRST - (CEIL - 1) * TXT_LEN_NEXT;
-				txt_sum += CEIL * TXT_CENA_NEXT;
+				txt_sum += CEIL * Math.round(TXT_CENA_NEXT * CENA_KOEF);
 				if(TXT_LEN_NEXT == LAST) CEIL++;
 				if(CEIL > 1) podr_about += ' + ' + TXT_LEN_NEXT;
 				if(CEIL > 2) podr_about += 'x' + (CEIL - 1);
@@ -61,7 +61,7 @@ var AJAX_MAIN = URL + '/ajax/main.php',
 				dis = sp.hasClass('dis');
 			if(!dis)
 				k++;
-			var cena = k == 4 ? 0 : OB_CENA + OB_DOP;
+			var cena = k == 4 ? 0 : OB_CENA + Math.round(OB_DOP * CENA_KOEF);
 			sp.find('.cena').html(OB_CENA ? '<b>' + cena + '</b> руб.' : '');
 			if(!dis)
 				OB_SUM += cena;

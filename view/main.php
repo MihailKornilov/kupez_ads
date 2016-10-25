@@ -1,5 +1,6 @@
 <?php
 function _kupez_header() {
+	define('VERSION_SCRIPT', 1);
 	return
 	'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'.
 	'<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru">'.
@@ -14,17 +15,18 @@ function _kupez_header() {
 		'<script>'.
 			'for(var i in VK)if(typeof VK[i]=="function")VK[i]=function(){return false};'.
 			'var URL="http://'.DOMAIN.'/kupez",'.
+				'APP_ID='.APP_ID.','.
 				'VIEWER_ID='.VIEWER_ID.','.
-				'APP_ID='.APP_ID.';'.
+				'CENA_KOEF='.CENA_KOEF.';'.
 		'</script>'.
 
-		'<link rel="stylesheet" type="text/css" href="'.API_HTML.'/css/vk.css" />'.
-		'<script src="'.API_HTML.'/js/vk.js"></script>'.
+		'<link rel="stylesheet" type="text/css" href="'.API_HTML.'/css/vk.css?'.VERSION_SCRIPT.'" />'.
+		'<script src="'.API_HTML.'/js/vk.js?'.VERSION_SCRIPT.'"></script>'.
 
-		'<script src="'.API_HTML.'/js/values/app_'.APP_ID.'.js"></script>'.
-		'<script src="js/main.js"></script>'.
+		'<script src="'.API_HTML.'/js/values/app_'.APP_ID.'.js?'.VERSION_SCRIPT.'"></script>'.
+		'<script src="js/main.js?'.VERSION_SCRIPT.'"></script>'.
 
-		'<link rel="stylesheet" type="text/css" href="css/main.css" />'.
+		'<link rel="stylesheet" type="text/css" href="css/main.css?'.VERSION_SCRIPT.'" />'.
 	'</head>'.
 
     '<body>';
@@ -103,8 +105,8 @@ function forma() {
 				'<div id="ob-calc"></div>'.
 		'<tr><td class="label">Дополнительно:'.
 			'<td class="title">'.
-				_check('ramka', 'Обвести в рамку <em>(+'.$dop[1]['cena'].' руб.)</em>').
-				_check('black', 'Чёрный фон <em>(+'.$dop[2]['cena'].' руб.)</em>').
+				_check('ramka', 'Обвести в рамку <em>(+'.round($dop[1]['cena'] * CENA_KOEF).' руб.)</em>').
+				_check('black', 'Чёрный фон <em>(+'.round($dop[2]['cena'] * CENA_KOEF).' руб.)</em>').
 		'<tr><td class="label">Телефон:<td class="title"><input type="text" id="telefon" placeholder="8 900 123 45 67" />'.
 		'<tr><td class="label top">Номера газеты:<td class="title">'.gazetaNomer().
 	'</table>';
@@ -211,10 +213,14 @@ function terms() {
 			'<p>Размещение объявлений в газете КупецЪ является платной услугой.'.
 			'<p>Вычисление стоимости объявления производится по следующей схеме:'.
 			'<table>'.
-				'<tr><td>Первые '.$g['TXT_LEN_FIRST'].' символов:<td>'.$g['TXT_CENA_FIRST'].' руб.'.
-				'<tr><td>Каждые следующие '.$g['TXT_LEN_NEXT'].' символов:<td>'.$g['TXT_CENA_NEXT'].' руб.'.
-				'<tr><td>Обвести в рамку:<td>'.$dop[1]['cena'].' руб.'.
-				'<tr><td>Выделить на чёрном фоне:<td>'.$dop[2]['cena'].' руб.'.
+				'<tr><td>Первые '.$g['TXT_LEN_FIRST'].' символов:'.
+					'<td class="r">'.round($g['TXT_CENA_FIRST'] * CENA_KOEF).' руб.'.
+				'<tr><td>Каждые следующие '.$g['TXT_LEN_NEXT'].' символов:'.
+					'<td class="r">'.round($g['TXT_CENA_NEXT'] * CENA_KOEF).' руб.'.
+				'<tr><td>Обвести в рамку:'.
+					'<td class="r">'.round($dop[1]['cena'] * CENA_KOEF).' руб.'.
+				'<tr><td>Выделить на чёрном фоне:'.
+					'<td class="r">'.round($dop[2]['cena'] * CENA_KOEF).' руб.'.
 			'</table>'.
 			'<h1>Сотрудники газеты могут отказать в размещении объявлений следующего содержания:</h1>'.
 			'<ul><li>товары, производство и (или) реализация которых запрещены законодательством Российской Федерации;'.
